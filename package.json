@@ -1,0 +1,21 @@
+{
+  "name": "lean-in-nodejs-server",
+  "version": "1.0.0",
+  "description": "To server front-end and connect the firebase database",
+  "main": "server.js",
+  "scripts": {
+    "start": "nodemon server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "X.J",
+  "license": "ISC",
+  "dependencies": {
+    "eslint-config-prettier": "^8.8.0",
+    "express": "^4.18.2",
+    "firebase-admin": "^11.6.0",
+    "nodemon": "^2.0.22"
+  },
+  "devDependencies": {
+    "eslint": "^8.38.0"
+  }
+}
