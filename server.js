@@ -3,17 +3,16 @@ const app = express();
 
 const admin = require('firebase-admin');
 const { getFirestore } = require('firebase-admin/firestore');
-// const { getDatabase } = require('firebase-admin/database');
 const credentials = require('./serviceAccountKey.json');
 
 admin.initializeApp({
     credential: admin.credential.cert(credentials),
-    // databaseURL: 'https://my-firebase-project-9e554-default-rtdb.firebaseio.com'
 });
 
 const db = getFirestore();
 
 const users = require('./src/routes/users')(db);
+const userController = require('./src/controllers/userController')(db);
 
 app.use(express.json());
 
@@ -24,14 +23,17 @@ app.use('/users', users);
 app.post('/signup', async (req, res) => {
     const { email, password } = req.body;
     try {
-        const user = await admin.auth().createUser({
+        const userResponse = await admin.auth().createUser({
             email,
             password,
             emailVerified: false,
             disabled: false,
         });
-        res.status(201).json({ user });
+        const uid = userResponse.uid;
+
+        await userController.createUser(req, res, uid);
     } catch (error) {
+        console.log(error);
         res.status(400).json({ error });
     }
 });
