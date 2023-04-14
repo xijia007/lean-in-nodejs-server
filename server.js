@@ -1,5 +1,5 @@
 const express = require('express');
-const app = express();
+const cors = require('cors');
 
 const admin = require('firebase-admin');
 const { getFirestore } = require('firebase-admin/firestore');
@@ -8,6 +8,9 @@ const credentials = require('./serviceAccountKey.json');
 admin.initializeApp({
     credential: admin.credential.cert(credentials),
 });
+
+const app = express();
+app.use(cors());
 
 const db = getFirestore();
 
