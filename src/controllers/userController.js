@@ -1,6 +1,6 @@
 const { FieldValue } = require('firebase-admin/firestore');
 
-const userController = (db) => {
+const userController = (db, admin) => {
     const getAllUsers = async (req, res) => {
         try {
             const users = await db.collection('users').get();
@@ -17,7 +17,7 @@ const userController = (db) => {
         }
     };
 
-    const createUser = async (req, res, uid) => {
+    const createDBUser = async (req, res, uid) => {
         try {
             const { email, userName, firstName, lastName, role, bio, skill } =
                 req.body;
@@ -44,6 +44,24 @@ const userController = (db) => {
             } else {
                 res.send(error);
             }
+        }
+    };
+
+    const signUpUser = async (req, res) => {
+        const { email, password } = req.body;
+        try {
+            const userResponse = await admin.auth().createUser({
+                email,
+                password,
+                emailVerified: false,
+                disabled: false,
+            });
+            const uid = userResponse.uid;
+
+            await createDBUser(req, res, uid);
+        } catch (error) {
+            console.log(error);
+            res.status(400).json({ error });
         }
     };
 
@@ -96,7 +114,8 @@ const userController = (db) => {
 
     return {
         getAllUsers,
-        createUser,
+        createDBUser,
+        signUpUser,
         getUser,
         updateUser,
         deleteUser,
