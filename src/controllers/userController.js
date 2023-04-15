@@ -75,6 +75,27 @@ const userController = (db, admin) => {
         }
     };
 
+    const findUserUid = async (req, res) => {
+        try {
+            const { uid } = req.params;
+
+            let userJson;
+            await db
+                .collection('users')
+                .where('uid', '==', uid)
+                .get()
+                .then((querySnapshot) => {
+                    querySnapshot.forEach((doc) => {
+                        userJson = doc;
+                    });
+                });
+
+            res.send(userJson.data());
+        } catch (error) {
+            res.send(error);
+        }
+    };
+
     const updateUser = async (req, res) => {
         try {
             const { id } = req.params;
@@ -117,6 +138,7 @@ const userController = (db, admin) => {
         createDBUser,
         signUpUser,
         getUser,
+        findUserUid,
         updateUser,
         deleteUser,
     };

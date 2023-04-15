@@ -11,6 +11,8 @@ module.exports = (db, admin) => {
 
     router.get('/:id', userController.getUser);
 
+    router.get('/find/:uid', userController.findUserUid);
+
     router.put('/:id', userController.updateUser);
 
     router.delete('/:id', userController.deleteUser);
