@@ -98,6 +98,39 @@ const userController = (db, admin) => {
         }
     };
 
+    const findUpdateUser = async (req, res) => {
+        try {
+            const { uid } = req.params;
+            const { email, userName, firstName, lastName, role, bio, skill } =
+                req.body;
+            let userJson = {
+                // email,
+                userName,
+                firstName,
+                lastName,
+                // role: role ?? 'user',
+                bio,
+                skill,
+                updatedAt: FieldValue.serverTimestamp(),
+            };
+            userJson = JSON.parse(JSON.stringify(userJson));
+
+            const response = await db
+                .collection('users')
+                .where('uid', '==', uid)
+                .get()
+                .then((querySnapshot) => {
+                    querySnapshot.forEach((doc) => {
+                        db.collection('users').doc(doc.id).update(userJson);
+                    });
+                });
+
+            res.send(response);
+        } catch (error) {
+            res.send(error);
+        }
+    };
+
     const updateUser = async (req, res) => {
         try {
             const { id } = req.params;
@@ -135,28 +168,27 @@ const userController = (db, admin) => {
         }
     };
 
-
     const recordCurrentUser = async (req, res) => {
         const loggedInUser = req.body;
         if (loggedInUser) {
             currentUser = loggedInUser;
-            res.send(loggedInUser)
-            console.log("record current user", currentUser)
+            res.send(loggedInUser);
+            console.log('record current user', currentUser);
         } else {
             res.sendStatus(404);
         }
-    }
+    };
 
     const removeCurrentUser = async (req, res) => {
         currentUser = null;
-        console.log("removed current user", currentUser)
+        console.log('removed current user', currentUser);
         res.sendStatus(204);
-    }
+    };
 
     const currentUserProfile = async (req, res) => {
         try {
             if (currentUser) {
-                console.log("current user profile", currentUser)
+                console.log('current user profile', currentUser);
                 res.send(currentUser);
             } else {
                 res.sendStatus(404);
@@ -164,8 +196,7 @@ const userController = (db, admin) => {
         } catch (error) {
             res.send(error);
         }
-
-    }
+    };
 
     return {
         getAllUsers,
@@ -175,9 +206,10 @@ const userController = (db, admin) => {
         findUserUid,
         updateUser,
         deleteUser,
+        findUpdateUser,
         recordCurrentUser,
         removeCurrentUser,
-        currentUserProfile
+        currentUserProfile,
     };
 };
 
