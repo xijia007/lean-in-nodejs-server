@@ -13,6 +13,8 @@ module.exports = (db, admin) => {
 
     router.get('/find/:uid', userController.findUserUid);
 
+    router.post('/update/:uid', userController.findUpdateUser);
+
     router.put('/:id', userController.updateUser);
 
     router.delete('/:id', userController.deleteUser);

@@ -96,6 +96,39 @@ const userController = (db, admin) => {
         }
     };
 
+    const findUpdateUser = async (req, res) => {
+        try {
+            const { uid } = req.params;
+            const { email, userName, firstName, lastName, role, bio, skill } =
+                req.body;
+            let userJson = {
+                // email,
+                userName,
+                firstName,
+                lastName,
+                // role: role ?? 'user',
+                bio,
+                skill,
+                updatedAt: FieldValue.serverTimestamp(),
+            };
+            userJson = JSON.parse(JSON.stringify(userJson));
+
+            const response = await db
+                .collection('users')
+                .where('uid', '==', uid)
+                .get()
+                .then((querySnapshot) => {
+                    querySnapshot.forEach((doc) => {
+                        db.collection('users').doc(doc.id).update(userJson);
+                    });
+                });
+
+            res.send(response);
+        } catch (error) {
+            res.send(error);
+        }
+    };
+
     const updateUser = async (req, res) => {
         try {
             const { id } = req.params;
@@ -141,6 +174,7 @@ const userController = (db, admin) => {
         findUserUid,
         updateUser,
         deleteUser,
+        findUpdateUser,
     };
 };
 
