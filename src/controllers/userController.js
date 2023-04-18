@@ -1,5 +1,7 @@
 const { FieldValue } = require('firebase-admin/firestore');
 
+let currentUser = null;
+
 const userController = (db, admin) => {
     const getAllUsers = async (req, res) => {
         try {
@@ -166,6 +168,36 @@ const userController = (db, admin) => {
         }
     };
 
+    const recordCurrentUser = async (req, res) => {
+        const loggedInUser = req.body;
+        if (loggedInUser) {
+            currentUser = loggedInUser;
+            res.send(loggedInUser);
+            console.log('record current user', currentUser);
+        } else {
+            res.sendStatus(404);
+        }
+    };
+
+    const removeCurrentUser = async (req, res) => {
+        currentUser = null;
+        console.log('removed current user', currentUser);
+        res.sendStatus(204);
+    };
+
+    const currentUserProfile = async (req, res) => {
+        try {
+            if (currentUser) {
+                console.log('current user profile', currentUser);
+                res.send(currentUser);
+            } else {
+                res.sendStatus(404);
+            }
+        } catch (error) {
+            res.send(error);
+        }
+    };
+
     return {
         getAllUsers,
         createDBUser,
@@ -175,6 +207,9 @@ const userController = (db, admin) => {
         updateUser,
         deleteUser,
         findUpdateUser,
+        recordCurrentUser,
+        removeCurrentUser,
+        currentUserProfile,
     };
 };
 
