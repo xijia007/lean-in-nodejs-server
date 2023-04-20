@@ -65,10 +65,34 @@ const jobController = (db, admin) => {
         }
     };
 
+    const searchJob = async (req, res) => {
+        const { keyword } = req.params;
+
+        console.log(keyword);
+
+        db.collection('jobs')
+            .where('title', '>=', keyword)
+            .where('title', '<=', keyword + '\uf8ff')
+            .limit(10)
+            .get()
+            .then((querySnapshot) => {
+                const data = [];
+                querySnapshot.forEach((doc) => {
+                    data.push(doc.data());
+                });
+                res.send(data);
+            })
+            .catch((error) => {
+                console.log(error);
+                res.sendStatus(500);
+            });
+    };
+
     return {
         getAllJobs,
         createJob,
         getJob,
+        searchJob,
         // updateJob,
         // deleteJob,
     };
