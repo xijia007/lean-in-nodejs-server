@@ -9,6 +9,8 @@ module.exports = (db, admin) => {
 
     router.get('/:id', jobController.getJob);
 
+    router.get('/search/:keyword', jobController.searchJob);
+
     // router.put('/:id', jobController.updateJob);
 
     // router.delete('/:id', jobController.deleteJob);
