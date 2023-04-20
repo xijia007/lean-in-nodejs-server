@@ -1,5 +1,5 @@
 const FieldValue = require('firebase-admin').firestore.FieldValue;
-const jobController = (db, admin) => {
+const jobController = (db) => {
     const getAllJobs = async (req, res) => {
         try {
             const jobs = await db.collection('jobs').get();

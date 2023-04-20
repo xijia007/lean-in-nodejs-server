@@ -3,6 +3,7 @@ const FieldValue = require('firebase-admin').firestore.FieldValue;
 let currentUser = null;
 
 const userController = (db, admin) => {
+    const educationController = require('./educationController')(db);
     const getAllUsers = async (req, res) => {
         try {
             const users = await db.collection('users').get();
@@ -98,6 +99,28 @@ const userController = (db, admin) => {
         }
     };
 
+    const findUserId = async (req) => {
+        try {
+            const { uid } = req.params;
+
+            let id;
+            await db
+                .collection('users')
+                .where('uid', '==', uid)
+                .get()
+                .then((querySnapshot) => {
+                    querySnapshot.forEach((doc) => {
+                        console.log(doc.id);
+                        id = doc.id;
+                    });
+                });
+
+            return id;
+        } catch (error) {
+            return error;
+        }
+    };
+
     const findUpdateUser = async (req, res) => {
         try {
             const { uid } = req.params;
@@ -114,7 +137,6 @@ const userController = (db, admin) => {
                 updatedAt: admin.firestore.FieldValue.serverTimestamp(),
             };
 
-            console.log(admin);
             userJson = JSON.parse(JSON.stringify(userJson));
 
             const response = await db
@@ -200,6 +222,47 @@ const userController = (db, admin) => {
         }
     };
 
+    const getEducations = async (req, res) => {
+        try {
+            const educationsResult = [];
+            const docId = await findUserId(req);
+            const snapshot = await admin
+                .firestore()
+                .collection('users')
+                .doc(docId)
+                .get();
+            const educations = snapshot.data().educations;
+            const promises = educations.map((doc) => doc.get());
+            const snapshots = await Promise.all(promises);
+            snapshots.forEach((snap) => {
+                educationsResult.push(snap.data());
+            });
+            // console.log(educationsResult);
+            res.send(educationsResult);
+        } catch (error) {
+            res.send(error);
+        }
+    };
+
+    const addEducation = async (req, res) => {
+        try {
+            const createEduResponseRef =
+                await educationController.createEducation(req);
+
+            const docId = await findUserId(req);
+            const userDocRef = admin.firestore().collection('users').doc(docId);
+
+            userDocRef.update({
+                educations:
+                    admin.firestore.FieldValue.arrayUnion(createEduResponseRef),
+            });
+
+            res.send(createEduResponseRef);
+        } catch (error) {
+            res.send(error);
+        }
+    };
+
     return {
         getAllUsers,
         createDBUser,
@@ -212,6 +275,8 @@ const userController = (db, admin) => {
         recordCurrentUser,
         removeCurrentUser,
         currentUserProfile,
+        addEducation,
+        getEducations,
     };
 };
 

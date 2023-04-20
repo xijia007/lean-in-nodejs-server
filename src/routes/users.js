@@ -25,5 +25,8 @@ module.exports = (db, admin) => {
 
     router.get('/currentUserProfile', userController.currentUserProfile);
 
+    router.post('/addEducation/:uid', userController.addEducation);
+    router.get('/getEducations/:uid', userController.getEducations);
+
     return router;
 };
