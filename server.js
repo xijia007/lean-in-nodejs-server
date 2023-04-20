@@ -15,8 +15,9 @@ app.use(cors());
 const db = getFirestore();
 
 const users = require('./src/routes/users')(db, admin);
-const jobs = require('./src/routes/jobs')(db, admin);
-const companies = require('./src/routes/companies')(db, admin);
+const jobs = require('./src/routes/jobs')(db);
+const companies = require('./src/routes/companies')(db);
+const educations = require('./src/routes/educations')(db);
 
 app.use(express.json());
 
@@ -25,6 +26,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/users', users);
 app.use('/jobs', jobs);
 app.use('/companies', companies);
+app.use('/educations', educations);
 
 const PORT = process.env.PORT || 8080;
 

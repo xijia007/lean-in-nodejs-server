@@ -1,11 +1,8 @@
 const express = require('express');
 const router = express.Router();
 
-module.exports = (db, admin) => {
-    const companyController = require('../controllers/companyController')(
-        db,
-        admin
-    );
+module.exports = (db) => {
+    const companyController = require('../controllers/companyController')(db);
     router.get('/', companyController.getAllCompanies);
 
     router.post('/create', companyController.createCompany);
