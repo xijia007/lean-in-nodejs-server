@@ -1,5 +1,5 @@
-const { FieldValue } = require('firebase-admin/firestore');
-
+// const { FieldValue } = require('firebase-admin/firestore');
+const FieldValue = require('firebase-admin').firestore.FieldValue;
 let currentUser = null;
 
 const userController = (db, admin) => {
@@ -111,8 +111,10 @@ const userController = (db, admin) => {
                 // role: role ?? 'user',
                 bio,
                 skill,
-                updatedAt: FieldValue.serverTimestamp(),
+                updatedAt: admin.firestore.FieldValue.serverTimestamp(),
             };
+
+            console.log(admin);
             userJson = JSON.parse(JSON.stringify(userJson));
 
             const response = await db

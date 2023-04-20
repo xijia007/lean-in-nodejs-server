@@ -4,10 +4,10 @@ const companyController = (db, admin) => {
         try {
             const company = await db.collection('companies').get();
             const companyJson = [];
-            company.forEach((job) => {
+            company.forEach((company) => {
                 companyJson.push({
-                    id: job.company_id,
-                    ...job.data(),
+                    id: company.company_id,
+                    ...company.data(),
                 });
             });
             res.send(companyJson);
@@ -42,8 +42,8 @@ const companyController = (db, admin) => {
     const getCompany = async (req, res) => {
         try {
             const { id } = req.params;
-            const job = await db.collection('companies').doc(id).get();
-            res.send(job.data());
+            const company = await db.collection('companies').doc(id).get();
+            res.send(company.data());
         } catch (error) {
             res.send(error);
         }

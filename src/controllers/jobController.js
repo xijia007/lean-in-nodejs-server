@@ -1,0 +1,77 @@
+const FieldValue = require('firebase-admin').firestore.FieldValue;
+const jobController = (db, admin) => {
+    const getAllJobs = async (req, res) => {
+        try {
+            const jobs = await db.collection('jobs').get();
+            const jobsJson = [];
+            jobs.forEach((job) => {
+                jobsJson.push({
+                    id: job.job_id,
+                    ...job.data(),
+                });
+            });
+            res.send(jobsJson);
+        } catch (error) {
+            res.send(error);
+        }
+    };
+
+    const createJob = async (req, res) => {
+        try {
+            const { job_id, company, title } = req.body;
+
+            let companyId;
+
+            //Find the company id if exist.
+            await db
+                .collection('companies')
+                .where('name', '==', company)
+                .get()
+                .then((querySnapshot) => {
+                    querySnapshot.forEach((doc) => {
+                        companyId = doc.id;
+                    });
+                });
+
+            //If company id does not exist, create a new company.
+            // if (!companyId) {
+            // }
+            const companyRef = db.collection('companies').doc(companyId);
+
+            let jobsJson = {
+                job_id,
+                title,
+                company: companyRef,
+                createdAt: FieldValue.serverTimestamp(),
+            };
+
+            jobsJson = JSON.parse(JSON.stringify(jobsJson));
+            // console.log(jobsJson);
+            const response = await db.collection('jobs').add(jobsJson);
+            // res.send({ ok: true });
+            res.send(response);
+        } catch (error) {
+            res.send(error);
+        }
+    };
+
+    const getJob = async (req, res) => {
+        try {
+            const { id } = req.params;
+            const job = await db.collection('jobs').doc(id).get();
+            res.send(job.data());
+        } catch (error) {
+            res.send(error);
+        }
+    };
+
+    return {
+        getAllJobs,
+        createJob,
+        getJob,
+        // updateJob,
+        // deleteJob,
+    };
+};
+
+module.exports = jobController;
