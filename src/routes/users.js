@@ -27,5 +27,3 @@ module.exports = (db, admin) => {
 
     return router;
 };
-
-// module.exports = router
