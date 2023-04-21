@@ -19,6 +19,8 @@ module.exports = (db, admin) => {
 
     router.delete('/:id', userController.deleteUser);
 
+    router.delete('/deleteAuthUser/:uid', userController.deleteAuthUser);
+
     router.post('/recordCurrentUser', userController.recordCurrentUser);
 
     router.post('/removeCurrentUser', userController.removeCurrentUser);
