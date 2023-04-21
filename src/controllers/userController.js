@@ -22,7 +22,7 @@ const userController = (db, admin) => {
 
     const createDBUser = async (req, res, uid) => {
         try {
-            const { email, userName, firstName, lastName, role, bio, skill } =
+            const { email, userName, firstName, lastName, role, bio, skills } =
                 req.body;
             let userJson = {
                 email,
@@ -31,7 +31,7 @@ const userController = (db, admin) => {
                 lastName,
                 role: role ?? 'user',
                 bio,
-                skill,
+                skills,
                 uid,
                 educations: [],
                 createdAt: FieldValue.serverTimestamp(),
@@ -125,7 +125,7 @@ const userController = (db, admin) => {
     const findUpdateUser = async (req, res) => {
         try {
             const { uid } = req.params;
-            const { email, userName, firstName, lastName, role, bio, skill } =
+            const { email, userName, firstName, lastName, role, bio, skills } =
                 req.body;
             let userJson = {
                 // email,
@@ -134,7 +134,7 @@ const userController = (db, admin) => {
                 lastName,
                 // role: role ?? 'user',
                 bio,
-                skill,
+                skills,
                 updatedAt: admin.firestore.FieldValue.serverTimestamp(),
             };
 
@@ -159,7 +159,7 @@ const userController = (db, admin) => {
     const updateUser = async (req, res) => {
         try {
             const { id } = req.params;
-            const { email, userName, firstName, lastName, role, bio, skill } =
+            const { email, userName, firstName, lastName, role, bio, skills } =
                 req.body;
             let userJson = {
                 email,
@@ -168,7 +168,7 @@ const userController = (db, admin) => {
                 lastName,
                 role: role ?? 'user',
                 bio,
-                skill,
+                skills,
                 updatedAt: FieldValue.serverTimestamp(),
             };
             userJson = JSON.parse(JSON.stringify(userJson));
