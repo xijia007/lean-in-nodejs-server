@@ -11,5 +11,7 @@ module.exports = (db) => {
 
     router.get('/:id', educationController.getEducation);
 
+    router.delete('/:id', educationController.deleteEducation);
+
     return router;
 };

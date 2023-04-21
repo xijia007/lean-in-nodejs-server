@@ -67,10 +67,25 @@ const educationController = (db) => {
         }
     };
 
+    const deleteEducation = async (education_doc_id) => {
+        try {
+            // const { id } = req.params;
+            const response = await db
+                .collection('educations')
+                .doc(education_doc_id)
+                .delete();
+            // res.send(education.data());
+            return response;
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
     return {
         getAllEducations,
         createEducation,
         getEducation,
+        deleteEducation,
     };
 };
 
