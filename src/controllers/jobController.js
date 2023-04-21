@@ -43,8 +43,12 @@ const jobController = (db) => {
                 });
 
             //If company id does not exist, create a new company.
-            // if (!companyId) {
-            // }
+            if (!companyId) {
+                const companyRef = await db.collection('companies').add({
+                    name: company,
+                });
+                companyId = companyRef.id;
+            }
             const companyRef = db.collection('companies').doc(companyId);
 
             let jobsJson = {
