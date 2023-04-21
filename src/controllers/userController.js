@@ -33,6 +33,7 @@ const userController = (db, admin) => {
                 bio,
                 skill,
                 uid,
+                educations: [],
                 createdAt: FieldValue.serverTimestamp(),
             };
 
@@ -263,6 +264,41 @@ const userController = (db, admin) => {
         }
     };
 
+    const deleteEducation = async (req, res) => {
+        try {
+            const { education_id } = req.params;
+            const { uid } = req.params;
+
+            console.log('education_id', education_id);
+            console.log('uid', uid);
+
+            let education_doc_id;
+            let eduDocRef;
+            await db
+                .collection('educations')
+                .where('education_id', '==', education_id)
+                .get()
+                .then((querySnapshot) => {
+                    querySnapshot.forEach((doc) => {
+                        eduDocRef = doc.ref;
+                        education_doc_id = doc.id;
+                    });
+                });
+            await educationController.deleteEducation(education_doc_id);
+
+            const docId = await findUserId(req);
+            const userDocRef = admin.firestore().collection('users').doc(docId);
+
+            userDocRef.update({
+                educations: admin.firestore.FieldValue.arrayRemove(eduDocRef),
+            });
+
+            res.send(education_doc_id);
+        } catch (error) {
+            res.send(error);
+        }
+    };
+
     return {
         getAllUsers,
         createDBUser,
@@ -277,6 +313,7 @@ const userController = (db, admin) => {
         currentUserProfile,
         addEducation,
         getEducations,
+        deleteEducation,
     };
 };
 
