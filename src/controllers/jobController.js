@@ -1,4 +1,3 @@
-const FieldValue = require('firebase-admin').firestore.FieldValue;
 const admin = require('firebase-admin');
 
 const jobController = (db) => {
@@ -20,8 +19,15 @@ const jobController = (db) => {
 
     const createJob = async (req, res) => {
         try {
-            const { job_id, company, title, company_name, location, apply } =
-                req.body;
+            const {
+                job_id,
+                company,
+                title,
+                company_name,
+                location,
+                description,
+                apply,
+            } = req.body;
 
             let companyId;
 
@@ -48,6 +54,7 @@ const jobController = (db) => {
                 company_name,
                 location,
                 company: companyRef,
+                description,
                 post_time: admin.firestore.Timestamp.fromDate(new Date()),
             };
 
