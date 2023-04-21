@@ -1,4 +1,6 @@
 const FieldValue = require('firebase-admin').firestore.FieldValue;
+const admin = require('firebase-admin');
+
 const jobController = (db) => {
     const getAllJobs = async (req, res) => {
         try {
@@ -18,7 +20,8 @@ const jobController = (db) => {
 
     const createJob = async (req, res) => {
         try {
-            const { job_id, company, title } = req.body;
+            const { job_id, company, title, company_name, location, apply } =
+                req.body;
 
             let companyId;
 
@@ -41,8 +44,11 @@ const jobController = (db) => {
             let jobsJson = {
                 job_id,
                 title,
+                apply,
+                company_name,
+                location,
                 company: companyRef,
-                createdAt: FieldValue.serverTimestamp(),
+                post_time: admin.firestore.Timestamp.fromDate(new Date()),
             };
 
             jobsJson = JSON.parse(JSON.stringify(jobsJson));
