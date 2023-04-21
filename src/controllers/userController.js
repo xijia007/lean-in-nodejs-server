@@ -193,6 +193,18 @@ const userController = (db, admin) => {
         }
     };
 
+    const deleteAuthUser = async (req, res) => {
+        try {
+            const { uid } = req.params;
+            const id = await findUserId(req);
+            const response = await db.collection('users').doc(id).delete();
+            await admin.auth().deleteUser(uid);
+            res.send(response);
+        } catch (error) {
+            res.send(error);
+        }
+    };
+
     const recordCurrentUser = async (req, res) => {
         const loggedInUser = req.body;
         if (loggedInUser) {
@@ -307,6 +319,7 @@ const userController = (db, admin) => {
         findUserUid,
         updateUser,
         deleteUser,
+        deleteAuthUser,
         findUpdateUser,
         recordCurrentUser,
         removeCurrentUser,
