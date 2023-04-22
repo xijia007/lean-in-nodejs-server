@@ -5,13 +5,13 @@ module.exports = (db) => {
     const experienceController = require('../controllers/experienceController')(
         db
     );
-    router.get('/', experienceController.getAllexperiences);
+    router.get('/', experienceController.getAllExperiences);
 
-    router.post('/create', experienceController.createexperience);
+    router.post('/create', experienceController.createExperience);
 
-    router.get('/:id', experienceController.getexperience);
+    router.get('/:id', experienceController.getExperience);
 
-    router.delete('/:id', experienceController.deleteexperience);
+    router.delete('/:id', experienceController.deleteExperience);
 
     return router;
 };

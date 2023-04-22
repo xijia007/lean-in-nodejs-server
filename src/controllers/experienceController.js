@@ -1,7 +1,7 @@
 const FieldValue = require('firebase-admin').firestore.FieldValue;
 const experienceController = (db) => {
-    const getAllexperiences = async (req, res) => {
-        console.log("get all experiences")
+    const getAllExperiences = async (req, res) => {
+        // console.log("get all experiences")
         try {
             const experience = await db.collection('experiences').get();
             const experienceJson = [];
@@ -17,7 +17,7 @@ const experienceController = (db) => {
         }
     };
 
-    const createexperience = async (req, res) => {
+    const createExperience = async (req, res) => {
         console.log("create experiences")
         try {
             const {
@@ -57,7 +57,7 @@ const experienceController = (db) => {
         }
     };
 
-    const getexperience = async (req, res) => {
+    const getExperience = async (req, res) => {
         try {
             const { id } = req.params;
             const experience = await db.collection('experiences').doc(id).get();
@@ -67,7 +67,7 @@ const experienceController = (db) => {
         }
     };
 
-    const deleteexperience = async (experience_doc_id) => {
+    const deleteExperience = async (experience_doc_id) => {
         try {
             // const { id } = req.params;
             const response = await db
@@ -82,10 +82,10 @@ const experienceController = (db) => {
     };
 
     return {
-        getAllexperiences,
-        createexperience,
-        getexperience,
-        deleteexperience,
+        getAllExperiences,
+        createExperience,
+        getExperience,
+        deleteExperience,
     };
 };
 

@@ -1,7 +1,7 @@
 const FieldValue = require('firebase-admin').firestore.FieldValue;
 const educationController = (db) => {
     const getAllEducations = async (req, res) => {
-        console.log("get all educations")
+        // console.log("get all educations")
         try {
             const education = await db.collection('educations').get();
             const educationJson = [];
@@ -63,6 +63,7 @@ const educationController = (db) => {
         try {
             const { id } = req.params;
             const education = await db.collection('educations').doc(id).get();
+            console.log("get education by docId?", id , ":", education.data());
             res.send(education.data());
         } catch (error) {
             res.send(error);

@@ -31,6 +31,8 @@ module.exports = (db, admin) => {
 
     router.get('/getEducations/:uid', userController.getEducations);
 
+    router.get('/getExperiences/:uid', userController.getExperiences);
+
     router.delete(
         '/deleteEducation/:education_id/:uid',
         userController.deleteEducation

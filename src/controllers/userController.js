@@ -3,7 +3,8 @@ const FieldValue = require('firebase-admin').firestore.FieldValue;
 let currentUser = null;
 
 const userController = (db, admin) => {
-    const educationController = require('./experienceController')(db);
+    const educationController = require('./educationController')(db);
+    const experienceController = require('./experienceController')(db);
     const jobController = require('./jobController')(db);
     const getAllUsers = async (req, res) => {
         try {
@@ -246,13 +247,40 @@ const userController = (db, admin) => {
                 .doc(docId)
                 .get();
             const educations = snapshot.data().educations;
+            console.log("educations", educations);
             const promises = educations.map((doc) => doc.get());
             const snapshots = await Promise.all(promises);
+            console.log("snapshots", snapshots);
             snapshots.forEach((snap) => {
                 educationsResult.push(snap.data());
             });
-            // console.log(educationsResult);
+            console.log("educationsResult", educationsResult);
             res.send(educationsResult);
+        } catch (error) {
+            res.send(error);
+        }
+    };
+
+    const getExperiences = async (req, res) => {
+        try {
+            // console.log("getting experiences in server");
+            const experiencesResult = [];
+            const docId = await findUserId(req);
+            const snapshot = await admin
+                .firestore()
+                .collection('users')
+                .doc(docId)
+                .get();
+            const experiences = snapshot.data().experiences;
+            console.log("get experiences in server", experiences);
+            const promises = experiences.map((doc) => doc.get());
+            const snapshots = await Promise.all(promises);
+            console.log("snapshots", snapshots);
+            snapshots.forEach((snap) => {
+                experiencesResult.push(snap.data());
+            });
+            // console.log("experiencesResult in server", experiencesResult);
+            res.send(experiencesResult);
         } catch (error) {
             res.send(error);
         }
@@ -360,8 +388,8 @@ const userController = (db, admin) => {
             const { education_id } = req.params;
             const { uid } = req.params;
 
-            console.log('education_id', education_id);
-            console.log('uid', uid);
+            // console.log('education_id', education_id);
+            // console.log('uid', uid);
 
             let education_doc_id;
             let eduDocRef;
@@ -405,6 +433,7 @@ const userController = (db, admin) => {
         currentUserProfile,
         addEducation,
         getEducations,
+        getExperiences,
         deleteEducation,
         saveJob,
         unsaveJob,
