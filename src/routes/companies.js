@@ -9,6 +9,10 @@ module.exports = (db) => {
 
     router.get('/:id', companyController.getCompany);
 
+    router.get('/find/:companyId', companyController.findCompanyByID);
+
+    router.post('/update/:companyId', companyController.updateCompany);
+
     // router.put('/:id', companyController.updateJob);
 
     // router.delete('/:id', companyController.deleteJob);
