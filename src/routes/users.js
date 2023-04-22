@@ -36,5 +36,9 @@ module.exports = (db, admin) => {
         userController.deleteEducation
     );
 
+    router.post('/saveJob/:uid', userController.saveJob);
+    router.post('/unsaveJob/:uid', userController.unsaveJob);
+    router.get('/savedJobs/:uid', userController.getSavedJobs);
+
     return router;
 };
