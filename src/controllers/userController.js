@@ -1,9 +1,10 @@
 // const { FieldValue } = require('firebase-admin/firestore');
 const FieldValue = require('firebase-admin').firestore.FieldValue;
-let currentUser = null;
 
 const userController = (db, admin) => {
     const educationController = require('./educationController')(db);
+    const experienceController = require('./experienceController')(db);
+
     const jobController = require('./jobController')(db);
     const getAllUsers = async (req, res) => {
         try {
@@ -206,36 +207,6 @@ const userController = (db, admin) => {
         }
     };
 
-    const recordCurrentUser = async (req, res) => {
-        const loggedInUser = req.body;
-        if (loggedInUser) {
-            currentUser = loggedInUser;
-            res.send(loggedInUser);
-            console.log('record current user', currentUser);
-        } else {
-            res.sendStatus(404);
-        }
-    };
-
-    const removeCurrentUser = async (req, res) => {
-        currentUser = null;
-        console.log('removed current user', currentUser);
-        res.sendStatus(204);
-    };
-
-    const currentUserProfile = async (req, res) => {
-        try {
-            if (currentUser) {
-                console.log('current user profile', currentUser);
-                res.send(currentUser);
-            } else {
-                res.sendStatus(404);
-            }
-        } catch (error) {
-            res.send(error);
-        }
-    };
-
     const getEducations = async (req, res) => {
         try {
             const educationsResult = [];
@@ -390,6 +361,134 @@ const userController = (db, admin) => {
         }
     };
 
+    const getExperience = async (req, res) => {
+        try {
+            const experiencesResult = [];
+            const docId = await findUserId(req);
+            const snapshot = await admin
+                .firestore()
+                .collection('users')
+                .doc(docId)
+                .get();
+            const experiences = snapshot.data().experiences;
+            const promises = experiences.map((doc) => doc.get());
+            const snapshots = await Promise.all(promises);
+            snapshots.forEach((snap) => {
+                experiencesResult.push(snap.data());
+            });
+            // console.log(educationsResult);
+            res.send(experiencesResult);
+        } catch (error) {
+            res.send(error);
+        }
+    };
+
+    const getAppliedJobs = async (req, res) => {
+        try {
+            const { uid } = req.params;
+            const jobsResults = [];
+            const jobDocs = await db
+                .collection('jobs')
+                .where('apply_uid', 'array-contains', uid)
+                .get();
+
+            jobDocs.forEach((doc) => {
+                // const jobId = doc.id;
+                const jobData = doc.data();
+                jobsResults.push(jobData);
+            });
+
+            res.send(jobsResults);
+        } catch (error) {
+            res.send(error);
+        }
+    };
+
+    const applyJob = async (req, res) => {
+        try {
+            const { uid } = req.params;
+            const { job_id } = req.body;
+
+            let jobDocId;
+            await db
+                .collection('jobs')
+                .where('job_id', '==', job_id)
+                .get()
+                .then((querySnapshot) => {
+                    querySnapshot.forEach((doc) => {
+                        jobDocId = doc.id;
+                    });
+                });
+            //If job id does not exist, create a new job.
+            if (!jobDocId) {
+                const jobRef = await jobController.createJob(req);
+                jobDocId = jobRef.id;
+            }
+            const jobDocRef = db.collection('jobs').doc(jobDocId);
+            await jobDocRef.update({
+                apply_uid: admin.firestore.FieldValue.arrayUnion(uid),
+            });
+
+            res.send(jobDocRef);
+        } catch (error) {
+            res.send(error);
+        }
+    };
+
+    const addExperience = async (req, res) => {
+        try {
+            const createExpResponseRef =
+             await experienceController.createExperience(req);
+
+            const docId = await findUserId(req);
+            const userDocRef = admin.firestore().collection('users').doc(docId);
+
+            userDocRef.update({
+                experiences:
+                    admin.firestore.FieldValue.arrayUnion(createExpResponseRef),
+            });
+
+            res.send(createExpResponseRef);
+        } catch (error) {
+            res.send(error);
+        }
+    };
+
+    const deleteExperience = async (req, res) => {
+        try {
+            const { experience_id } = req.params;
+            const { uid } = req.params;
+
+            // console.log('education_id', experience_id);
+            console.log('uid', uid);
+
+            let experience_doc_id;
+            let expDocRef;
+            await db
+                .collection('experiences')
+                .where('experience_id', '==', experience_id)
+                .get()
+                .then((querySnapshot) => {
+                    querySnapshot.forEach((doc) => {
+                        expDocRef = doc.ref;
+                        experience_doc_id = doc.id;
+                    });
+                });
+            await experienceController.deleteExperience(experience_doc_id);
+
+            const docId = await findUserId(req);
+            const userDocRef = admin.firestore().collection('users').doc(docId);
+
+            userDocRef.update({
+                educations: admin.firestore.FieldValue.arrayRemove(expDocRef),
+            });
+
+            res.send(experience_doc_id);
+        } catch (error) {
+            res.send(error);
+        }
+    };
+
     return {
         getAllUsers,
         createDBUser,
@@ -400,15 +499,17 @@ const userController = (db, admin) => {
         deleteUser,
         deleteAuthUser,
         findUpdateUser,
-        recordCurrentUser,
-        removeCurrentUser,
-        currentUserProfile,
         addEducation,
         getEducations,
         deleteEducation,
         saveJob,
         unsaveJob,
         getSavedJobs,
+        applyJob,
+        getAppliedJobs,
+        addExperience,
+        getExperience,
+        deleteExperience
     };
 };
 

@@ -66,8 +66,6 @@ const companyController = (db) => {
                     });
                 });
 
-            console.log("company data: ", companyJson.data())
-
             res.send(companyJson.data());
         } catch (error) {
             res.send(error);

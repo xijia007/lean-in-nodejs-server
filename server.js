@@ -18,6 +18,7 @@ const users = require('./src/routes/users')(db, admin);
 const jobs = require('./src/routes/jobs')(db);
 const companies = require('./src/routes/companies')(db);
 const educations = require('./src/routes/educations')(db);
+const experiences = require('./src/routes/experiences')(db);
 
 app.use(express.json());
 
@@ -27,6 +28,7 @@ app.use('/users', users);
 app.use('/jobs', jobs);
 app.use('/companies', companies);
 app.use('/educations', educations);
+app.use('/experiences', experiences);
 
 const PORT = process.env.PORT || 8080;
 

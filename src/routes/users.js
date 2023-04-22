@@ -21,12 +21,6 @@ module.exports = (db, admin) => {
 
     router.delete('/deleteAuthUser/:uid', userController.deleteAuthUser);
 
-    router.post('/recordCurrentUser', userController.recordCurrentUser);
-
-    router.post('/removeCurrentUser', userController.removeCurrentUser);
-
-    router.get('/currentUserProfile', userController.currentUserProfile);
-
     router.post('/addEducation/:uid', userController.addEducation);
 
     router.get('/getEducations/:uid', userController.getEducations);
@@ -39,6 +33,19 @@ module.exports = (db, admin) => {
     router.post('/saveJob/:uid', userController.saveJob);
     router.post('/unsaveJob/:uid', userController.unsaveJob);
     router.get('/savedJobs/:uid', userController.getSavedJobs);
+
+
+    router.post('/addExperience/:uid', userController.addExperience);
+
+    router.get('/getExperiences/:uid', userController.getExperience);
+
+    router.delete(
+        '/deleteExperience/:experience_id/:uid',
+        userController.deleteExperience
+    );
+
+    router.post('/applyJob/:uid', userController.applyJob);
+    router.get('/getAppliedJobs/:uid', userController.getAppliedJobs);
 
     return router;
 };
