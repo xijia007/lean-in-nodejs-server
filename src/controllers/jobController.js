@@ -21,10 +21,11 @@ const jobController = (db) => {
         try {
             const {
                 job_id,
-                company,
+                // company,
                 title,
                 company_name,
-                location,
+                add_city,
+                add_state,
                 description,
                 apply,
             } = req.body;
@@ -34,7 +35,7 @@ const jobController = (db) => {
             //Find the company id if exist.
             await db
                 .collection('companies')
-                .where('name', '==', company)
+                .where('name', '==', company_name)
                 .get()
                 .then((querySnapshot) => {
                     querySnapshot.forEach((doc) => {
@@ -45,7 +46,7 @@ const jobController = (db) => {
             //If company id does not exist, create a new company.
             if (!companyId) {
                 const companyRef = await db.collection('companies').add({
-                    name: company,
+                    name: company_name,
                 });
                 companyId = companyRef.id;
             }
@@ -56,17 +57,22 @@ const jobController = (db) => {
                 title,
                 apply,
                 company_name,
-                location,
+                add_city,
+                add_state,
+                save_uid: [],
                 company: companyRef,
                 description,
-                post_time: admin.firestore.Timestamp.fromDate(new Date()),
             };
 
             jobsJson = JSON.parse(JSON.stringify(jobsJson));
             // console.log(jobsJson);
             const response = await db.collection('jobs').add(jobsJson);
             // res.send({ ok: true });
-            res.send(response);
+            if (res) {
+                res.send(response);
+            } else {
+                return response;
+            }
         } catch (error) {
             res.send(error);
         }

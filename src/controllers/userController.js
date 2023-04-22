@@ -4,6 +4,7 @@ let currentUser = null;
 
 const userController = (db, admin) => {
     const educationController = require('./educationController')(db);
+    const jobController = require('./jobController')(db);
     const getAllUsers = async (req, res) => {
         try {
             const users = await db.collection('users').get();
@@ -257,6 +258,84 @@ const userController = (db, admin) => {
         }
     };
 
+    const getSavedJobs = async (req, res) => {
+        try {
+            const { uid } = req.params;
+            const jobsResults = [];
+            const jobDocs = await db
+                .collection('jobs')
+                .where('save_uid', 'array-contains', uid)
+                .get();
+
+            jobDocs.forEach((doc) => {
+                // const jobId = doc.id;
+                const jobData = doc.data();
+                jobsResults.push(jobData);
+            });
+
+            res.send(jobsResults);
+        } catch (error) {
+            res.send(error);
+        }
+    };
+
+    const saveJob = async (req, res) => {
+        try {
+            const { uid } = req.params;
+            const { job_id } = req.body;
+
+            let jobDocId;
+            //Find the job id if exist.
+            await db
+                .collection('jobs')
+                .where('job_id', '==', job_id)
+                .get()
+                .then((querySnapshot) => {
+                    querySnapshot.forEach((doc) => {
+                        jobDocId = doc.id;
+                    });
+                });
+            //If job id does not exist, create a new job.
+            if (!jobDocId) {
+                const jobRef = await jobController.createJob(req);
+                jobDocId = jobRef.id;
+            }
+            const jobDocRef = db.collection('jobs').doc(jobDocId);
+            await jobDocRef.update({
+                save_uid: admin.firestore.FieldValue.arrayUnion(uid),
+            });
+
+            res.send(jobDocRef);
+        } catch (error) {
+            res.send(error);
+        }
+    };
+
+    const unsaveJob = async (req, res) => {
+        try {
+            const { uid } = req.params;
+            const { job_id } = req.body;
+
+            let jobDocId;
+            await db
+                .collection('jobs')
+                .where('job_id', '==', job_id)
+                .get()
+                .then((querySnapshot) => {
+                    querySnapshot.forEach((doc) => {
+                        jobDocId = doc.id;
+                    });
+                });
+            const jobDocRef = db.collection('jobs').doc(jobDocId);
+            await jobDocRef.update({
+                save_uid: admin.firestore.FieldValue.arrayRemove(uid),
+            });
+            res.send(jobDocRef);
+        } catch (error) {
+            res.send(error);
+        }
+    };
+
     const addEducation = async (req, res) => {
         try {
             const createEduResponseRef =
@@ -327,6 +406,9 @@ const userController = (db, admin) => {
         addEducation,
         getEducations,
         deleteEducation,
+        saveJob,
+        unsaveJob,
+        getSavedJobs,
     };
 };
 
