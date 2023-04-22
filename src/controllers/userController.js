@@ -459,7 +459,7 @@ const userController = (db, admin) => {
             const { experience_id } = req.params;
             const { uid } = req.params;
 
-            // console.log('education_id', experience_id);
+            console.log('experience id: ', experience_id);
             console.log('uid', uid);
 
             let experience_doc_id;
@@ -480,7 +480,7 @@ const userController = (db, admin) => {
             const userDocRef = admin.firestore().collection('users').doc(docId);
 
             userDocRef.update({
-                educations: admin.firestore.FieldValue.arrayRemove(expDocRef),
+                experiences: admin.firestore.FieldValue.arrayRemove(expDocRef),
             });
 
             res.send(experience_doc_id);
