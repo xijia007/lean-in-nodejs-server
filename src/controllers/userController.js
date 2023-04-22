@@ -3,7 +3,7 @@ const FieldValue = require('firebase-admin').firestore.FieldValue;
 let currentUser = null;
 
 const userController = (db, admin) => {
-    const educationController = require('./educationController')(db);
+    const educationController = require('./experienceController')(db);
     const jobController = require('./jobController')(db);
     const getAllUsers = async (req, res) => {
         try {
