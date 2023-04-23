@@ -24,8 +24,16 @@ const userController = (db, admin) => {
 
     const createDBUser = async (req, res, uid) => {
         try {
-            const { email, userName, firstName, lastName, role, bio, skills } =
-                req.body;
+            const {
+                email,
+                userName,
+                firstName,
+                lastName,
+                role,
+                bio,
+                skills,
+                userCompanyId,
+            } = req.body;
             let userJson = {
                 email,
                 userName,
@@ -36,6 +44,7 @@ const userController = (db, admin) => {
                 skills,
                 uid,
                 educations: [],
+                userCompanyId,
                 createdAt: FieldValue.serverTimestamp(),
             };
 
@@ -438,7 +447,7 @@ const userController = (db, admin) => {
     const addExperience = async (req, res) => {
         try {
             const createExpResponseRef =
-             await experienceController.createExperience(req);
+                await experienceController.createExperience(req);
 
             const docId = await findUserId(req);
             const userDocRef = admin.firestore().collection('users').doc(docId);
@@ -509,7 +518,7 @@ const userController = (db, admin) => {
         getAppliedJobs,
         addExperience,
         getExperience,
-        deleteExperience
+        deleteExperience,
     };
 };
 
