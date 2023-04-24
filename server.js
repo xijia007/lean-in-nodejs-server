@@ -29,6 +29,9 @@ app.use('/jobs', jobs);
 app.use('/companies', companies);
 app.use('/educations', educations);
 app.use('/experiences', experiences);
+app.use('/', (req, res) => {
+    res.send('Hi!, Welcome to the LeanIn API Server.');
+});
 
 const PORT = process.env.PORT || 8080;
 
